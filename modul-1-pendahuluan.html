@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI di Meja Kerja — Bahan Ajar Interaktif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F7FB;
+    --surface:#FFFFFF;
+    --surface-2:#EEF1F8;
+    --ink:#10192E;
+    --ink-soft:#4B5670;
+    --ink-faint:#8A93AB;
+    --teal:#0E7C86;
+    --teal-dark:#0A5F67;
+    --teal-tint:#E3F3F2;
+    --amber:#F2994A;
+    --amber-tint:#FDEEE0;
+    --coral:#E85D4C;
+    --coral-tint:#FCE7E3;
+    --line:#DDE3ED;
+    --radius:14px;
+    --shadow:0 8px 30px rgba(16,25,46,0.06);
+    --mono:'IBM Plex Mono',monospace;
+    --sans:'IBM Plex Sans',sans-serif;
+    --display:'Space Grotesk',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto;} *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;} }
+  body{
+    margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{font-family:var(--display); font-weight:600; margin:0; letter-spacing:-0.01em;}
+  p{margin:0;}
+  a{color:inherit;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px;}
+  code, .mono{font-family:var(--mono);}
+
+  /* ---------- APP LAYOUT / SIDEBAR ---------- */
+  .app{display:flex; min-height:100vh;}
+  .sidebar{
+    width:264px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--line);
+    position:sticky; top:0; height:100vh; overflow-y:auto; padding:20px 0 40px;
+  }
+  .sidebar-brand{display:flex; align-items:center; gap:10px; padding:0 18px 18px; border-bottom:1px solid var(--line); margin-bottom:12px;}
+  .brand-mark{width:30px;height:30px;border-radius:8px;background:var(--teal);display:flex;align-items:center;justify-content:center;transform:rotate(0);flex-shrink:0;}
+  .brand-mark span{width:10px;height:10px;border-radius:3px;background:#fff;display:inline-block;transform:rotate(45deg);}
+  .sidebar-brand .name{font-family:var(--display); font-size:14.5px; font-weight:700;}
+  .sidebar-brand .sub{font-size:10.5px; color:var(--ink-faint); font-family:var(--mono);}
+  .home-link{
+    display:flex; align-items:center; gap:8px; margin:14px 18px 4px; padding:8px 10px;
+    font-family:var(--mono); font-size:12px; color:var(--ink-soft); border:1px solid var(--line);
+    text-decoration:none; border-radius:8px; transition:all .15s ease;
+  }
+  .home-link:hover{border-color:var(--teal); color:var(--teal-dark); background:var(--teal-tint);}
+  .home-link svg{width:13px;height:13px;flex-shrink:0;}
+  .tree-item{
+    display:flex; align-items:center; gap:9px; padding:8px 18px 8px 20px; font-size:13px; color:var(--ink-soft);
+    cursor:pointer; border-left:2px solid transparent; transition:background .15s, color .15s, border-color .15s;
+  }
+  .tree-item .num{font-family:var(--mono); font-size:10.5px; color:var(--ink-faint); width:16px; flex-shrink:0;}
+  .tree-item:hover{background:var(--teal-tint); color:var(--ink);}
+  .tree-item.active{background:var(--teal-tint); color:var(--teal-dark); border-left-color:var(--teal);}
+  .tree-item.active .num{color:var(--teal-dark);}
+  .main{flex:1; min-width:0;}
+  .mobile-bar{display:none; position:sticky; top:0; z-index:20; background:rgba(245,247,251,0.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:14px 20px; align-items:center; justify-content:space-between;}
+  .mobile-bar button{background:none; border:1px solid var(--line); color:var(--ink); padding:7px 12px; font-family:var(--mono); font-size:12px; border-radius:8px;}
+  @media (max-width:900px){
+    .sidebar{position:fixed; left:-280px; top:0; z-index:30; transition:left .25s; box-shadow:20px 0 40px rgba(16,25,46,0.18);}
+    .sidebar.open{left:0;}
+    .mobile-bar{display:flex;}
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{padding:72px 0 40px;}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px;
+    text-transform:uppercase; letter-spacing:0.12em; color:var(--teal-dark); background:var(--teal-tint);
+    padding:6px 12px; border-radius:100px; margin-bottom:22px;
+  }
+  .hero h1{font-size:clamp(32px,5vw,52px); line-height:1.06; max-width:820px;}
+  .hero h1 em{font-style:normal; color:var(--teal);}
+  .hero-sub{margin-top:18px; font-size:18px; color:var(--ink-soft); max-width:640px;}
+  .hero-actions{margin-top:30px; display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--sans); font-weight:600; font-size:15px; padding:13px 24px; border-radius:100px;
+    border:1px solid transparent; cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+    transition:transform .15s, box-shadow .15s, background .2s;
+  }
+  .btn-primary{background:var(--ink); color:#fff;}
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 10px 24px rgba(16,25,46,0.18);}
+  .btn-ghost{background:transparent; border-color:var(--line); color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--ink); }
+
+  /* ---------- CONSOLE DEMO ---------- */
+  .console{
+    margin-top:48px; background:var(--ink); border-radius:18px; padding:0; overflow:hidden; box-shadow:var(--shadow);
+    max-width:720px;
+  }
+  .console-bar{display:flex; gap:6px; padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.08);}
+  .console-bar span{width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,0.18);}
+  .console-body{padding:22px 24px 26px; font-family:var(--mono); font-size:14px; min-height:150px;}
+  .console-label{color:#7FA9AC; font-size:12px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:8px;}
+  .console-prompt{color:#EAF3F2; min-height:44px;}
+  .console-prompt .cursor{display:inline-block; width:7px; height:16px; background:var(--amber); vertical-align:-2px; animation:blink 1s step-end infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  .console-output{margin-top:16px; padding-top:16px; border-top:1px dashed rgba(255,255,255,0.14); color:#B9E3E0; opacity:0; transition:opacity .4s;}
+  .console-output.show{opacity:1;}
+
+  /* ---------- RAIL / FLOWCHART NAV ---------- */
+  .rail-section{padding:36px 0 8px;}
+  .rail{
+    display:flex; gap:0; overflow-x:auto; padding:8px 0 18px; scrollbar-width:thin;
+  }
+  .rail-node{
+    flex:0 0 auto; display:flex; align-items:center; text-decoration:none; cursor:pointer;
+  }
+  .rail-node .pill{
+    background:var(--surface); border:1.5px solid var(--line); border-radius:100px; padding:9px 16px 9px 12px;
+    display:flex; align-items:center; gap:9px; font-size:13px; font-weight:600; color:var(--ink-soft);
+    white-space:nowrap; transition:all .2s;
+  }
+  .rail-node .pill .num{
+    font-family:var(--mono); font-size:11px; color:#fff; background:var(--ink-faint); width:20px; height:20px;
+    border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .rail-node.active .pill, .rail-node:hover .pill{border-color:var(--teal); color:var(--ink); background:var(--teal-tint);}
+  .rail-node.active .pill .num{background:var(--teal);}
+  .rail-arrow{color:var(--line); padding:0 6px; font-size:14px; flex:none;}
+
+  /* ---------- MODULE SECTIONS ---------- */
+  section.module{padding:64px 0; border-top:1px solid var(--line);}
+  .module-head{display:flex; gap:18px; align-items:flex-start; margin-bottom:36px;}
+  .module-num{
+    font-family:var(--mono); font-size:13px; color:var(--teal-dark); background:var(--teal-tint);
+    padding:5px 11px; border-radius:8px; flex:none; margin-top:6px;
+  }
+  .module-head h2{font-size:clamp(24px,3.4vw,34px);}
+  .module-desc{color:var(--ink-soft); font-size:16px; max-width:640px; margin-top:8px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:760px){ .grid-2, .grid-3{grid-template-columns:1fr;} }
+
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:22px;}
+  .card h4{font-size:16px; margin-bottom:12px; display:flex; align-items:center; gap:8px;}
+  .card ul{margin:0; padding-left:0; list-style:none; display:flex; flex-direction:column; gap:10px;}
+  .card li{font-size:14.5px; color:var(--ink-soft); padding-left:24px; position:relative;}
+  .card.good{border-color:#BFE3DE;}
+  .card.good h4{color:var(--teal-dark);}
+  .card.good li:before{content:"✓"; position:absolute; left:0; color:var(--teal); font-weight:700;}
+  .card.warn{border-color:#F4D9BC;}
+  .card.warn h4{color:#B8631C;}
+  .card.warn li:before{content:"!"; position:absolute; left:2px; color:var(--amber); font-weight:700;}
+
+  .tag{
+    display:inline-block; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em;
+    padding:4px 9px; border-radius:6px; background:var(--surface-2); color:var(--ink-soft); margin-bottom:10px;
+  }
+  .tag.cocok{background:var(--teal-tint); color:var(--teal-dark);}
+  .tag.manusia{background:var(--coral-tint); color:#B8402E;}
+
+  /* anatomy prompt boxes */
+  .anatomy{display:flex; gap:10px; flex-wrap:wrap; margin:28px 0;}
+  .anatomy .abox{
+    flex:1 1 200px; background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius); padding:18px;
+    position:relative;
+  }
+  .anatomy .abox .letter{font-family:var(--mono); font-size:11px; color:var(--teal); margin-bottom:6px; display:block;}
+  .anatomy .abox h5{font-family:var(--display); font-size:15px; margin-bottom:6px;}
+  .anatomy .abox p{font-size:13.5px; color:var(--ink-soft);}
+  .anatomy .arrow-between{display:flex; align-items:center; color:var(--ink-faint); font-size:18px; padding:0 2px;}
+  @media (max-width:760px){ .anatomy{flex-direction:column;} .anatomy .arrow-between{transform:rotate(90deg); align-self:center;} }
+
+  /* prompt builder */
+  .builder{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:24px; margin-top:22px;}
+  .builder-controls{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px;}
+  @media (max-width:760px){ .builder-controls{grid-template-columns:1fr;} }
+  .builder-controls label{font-size:12px; font-weight:600; color:var(--ink-soft); display:block; margin-bottom:6px;}
+  .builder-controls select{
+    width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--line); background:var(--bg);
+    font-family:var(--sans); font-size:13.5px; color:var(--ink);
+  }
+  .builder-out{
+    background:var(--ink); color:#EAF3F2; border-radius:10px; padding:18px; font-family:var(--mono); font-size:13.5px;
+    line-height:1.7; white-space:pre-wrap;
+  }
+  .builder-out .hl{color:var(--amber); font-weight:600;}
+
+  /* before/after */
+  .compare{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:24px;}
+  @media (max-width:760px){ .compare{grid-template-columns:1fr;} }
+  .compare .box{border-radius:var(--radius); padding:18px; font-size:13.5px;}
+  .compare .bad{background:var(--coral-tint); border:1px solid #F1BDB2;}
+  .compare .best{background:var(--teal-tint); border:1px solid #BFE3DE;}
+  .compare .box .lbl{font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px; display:block;}
+  .compare .bad .lbl{color:#B8402E;}
+  .compare .best .lbl{color:var(--teal-dark);}
+  .compare .box p{font-family:var(--mono); font-size:13px; color:var(--ink); line-height:1.6;}
+
+  /* flowchart */
+  .flow-wrap{display:flex; gap:24px; margin-top:24px; align-items:flex-start; flex-wrap:wrap;}
+  .flow-svg-box{flex:1 1 400px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px;}
+  .flow-info{flex:1 1 260px; background:var(--surface-2); border-radius:var(--radius); padding:20px; min-height:180px;}
+  .flow-info .flow-title{font-family:var(--display); font-weight:600; font-size:16px; margin-bottom:8px; color:var(--teal-dark);}
+  .flow-info p{font-size:13.5px; color:var(--ink-soft);}
+  .fnode{cursor:pointer; transition:opacity .2s;}
+  .fnode:hover, .fnode.active{opacity:0.75;}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; margin-top:14px;}
+  .legend-item{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink-soft);}
+  .legend-shape{width:16px; height:16px; flex:none;}
+
+  /* database table */
+  .db-analogy{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:26px;}
+  @media (max-width:760px){ .db-analogy{grid-template-columns:1fr;} }
+  .data-table{width:100%; border-collapse:collapse; background:var(--surface); border-radius:var(--radius); overflow:hidden; font-size:13.5px;}
+  .data-table th{
+    background:var(--ink); color:#fff; padding:12px 14px; text-align:left; font-family:var(--mono); font-weight:500;
+    font-size:12px; cursor:pointer; transition:background .2s;
+  }
+  .data-table th:hover, .data-table th.active{background:var(--teal-dark);}
+  .data-table td{padding:11px 14px; border-top:1px solid var(--line); color:var(--ink-soft);}
+  .data-table tr td.active-col{background:var(--teal-tint); color:var(--ink);}
+  .table-caption{font-family:var(--mono); font-size:11.5px; color:var(--ink-faint); margin:10px 0 8px;}
+
+  .erd-box{margin-top:28px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:24px; display:flex; justify-content:center;}
+
+  /* steps */
+  .steps{display:flex; flex-direction:column; gap:0; margin-top:24px;}
+  .step{display:flex; gap:18px; padding:20px 0; border-top:1px solid var(--line);}
+  .step:first-child{border-top:none;}
+  .step .snum{font-family:var(--display); font-size:22px; color:var(--line); flex:none; width:36px;}
+  .step h5{font-size:15.5px; margin-bottom:5px;}
+  .step p{font-size:13.5px; color:var(--ink-soft);}
+
+  /* hosting compare table */
+  .htable{width:100%; border-collapse:collapse; margin-top:22px; font-size:13.5px;}
+  .htable th{text-align:left; font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); padding:10px 14px; border-bottom:2px solid var(--ink);}
+  .htable td{padding:14px; border-bottom:1px solid var(--line); color:var(--ink-soft); vertical-align:top;}
+  .htable td:first-child{font-weight:600; color:var(--ink); font-family:var(--display);}
+
+  .checklist{display:flex; flex-direction:column; gap:10px; margin-top:20px;}
+  .check-item{
+    display:flex; align-items:flex-start; gap:12px; background:var(--surface); border:1px solid var(--line);
+    border-radius:10px; padding:14px 16px; cursor:pointer; transition:all .2s;
+  }
+  .check-item.done{background:var(--teal-tint); border-color:#BFE3DE;}
+  .check-item .box{width:18px; height:18px; border-radius:5px; border:1.5px solid var(--ink-faint); flex:none; margin-top:1px; display:flex; align-items:center; justify-content:center; font-size:12px; color:transparent; transition:all .15s;}
+  .check-item.done .box{background:var(--teal); border-color:var(--teal); color:#fff;}
+  .check-item span.txt{font-size:13.5px; color:var(--ink-soft);}
+  .check-item.done span.txt{color:var(--ink); text-decoration:line-through; text-decoration-color:var(--teal);}
+
+  /* ethics cards */
+  .ethic-card{display:flex; gap:14px; align-items:flex-start; padding:18px 0; border-top:1px solid var(--line);}
+  .ethic-card:first-child{border-top:none;}
+  .ethic-icon{
+    width:38px; height:38px; border-radius:10px; background:var(--amber-tint); color:#B8631C; flex:none;
+    display:flex; align-items:center; justify-content:center; font-family:var(--display); font-weight:700; font-size:15px;
+  }
+
+  /* quiz */
+  .quiz-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:24px; margin-bottom:16px;}
+  .quiz-q{font-family:var(--display); font-size:16px; margin-bottom:14px;}
+  .quiz-opts{display:flex; flex-direction:column; gap:8px;}
+  .quiz-opt{
+    text-align:left; padding:12px 14px; border-radius:9px; border:1px solid var(--line); background:var(--bg);
+    font-family:var(--sans); font-size:13.5px; color:var(--ink); cursor:pointer; transition:all .15s;
+  }
+  .quiz-opt:hover{border-color:var(--teal);}
+  .quiz-opt.correct{background:var(--teal-tint); border-color:var(--teal); font-weight:600;}
+  .quiz-opt.incorrect{background:var(--coral-tint); border-color:#E8A99C;}
+  .quiz-opt[disabled]{cursor:default;}
+  .quiz-score{
+    position:sticky; bottom:20px; margin-top:24px; background:var(--ink); color:#fff; border-radius:14px;
+    padding:18px 24px; display:flex; align-items:center; justify-content:space-between; box-shadow:var(--shadow);
+  }
+  .quiz-score .n{font-family:var(--display); font-size:22px; color:var(--amber);}
+  .badge-done{display:none; font-family:var(--mono); font-size:12px; background:var(--teal); padding:6px 12px; border-radius:100px;}
+  .badge-done.show{display:inline-block;}
+
+  footer{padding:50px 0 80px; color:var(--ink-faint); font-size:13px; text-align:center;}
+
+  /* ---- shape accordion (Module 3) ---- */
+  .shape-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  @media (max-width:760px){ .shape-grid{grid-template-columns:1fr;} }
+  .shape-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:4px 18px;}
+  .shape-card summary{
+    list-style:none; cursor:pointer; padding:14px 0; display:flex; align-items:center; gap:12px;
+    font-family:var(--display); font-weight:600; font-size:14.5px;
+  }
+  .shape-card summary::-webkit-details-marker{display:none;}
+  .shape-card summary::after{content:"+"; margin-left:auto; color:var(--ink-faint); font-size:18px; font-family:var(--mono);}
+  .shape-card[open] summary::after{content:"–";}
+  .shape-body{padding:0 0 18px; font-size:13.5px; color:var(--ink-soft); display:flex; flex-direction:column; gap:8px;}
+  .shape-body .ex{font-family:var(--mono); font-size:12px; color:var(--ink-faint); background:var(--surface-2); padding:8px 10px; border-radius:8px;}
+
+  /* ---- key badges (Module 4) ---- */
+  .key-badge{
+    display:inline-block; font-family:var(--mono); font-size:10px; font-weight:600; padding:2px 7px;
+    border-radius:5px; margin-left:6px; vertical-align:1px;
+  }
+  .key-badge.pk{background:var(--teal); color:#fff;}
+  .key-badge.fk{background:var(--amber); color:#fff;}
+  .key-card{position:relative;}
+
+  /* ---- relation accordion (Module 4) ---- */
+  .relation-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:4px 20px; margin-bottom:12px;}
+  .relation-card summary{
+    list-style:none; cursor:pointer; padding:16px 0; display:flex; align-items:center; gap:12px;
+    font-family:var(--display); font-weight:600; font-size:15px;
+  }
+  .relation-card summary::-webkit-details-marker{display:none;}
+  .relation-card summary::after{content:"+"; margin-left:auto; color:var(--ink-faint); font-size:18px; font-family:var(--mono);}
+  .relation-card[open] summary::after{content:"–";}
+  .rel-tag{font-family:var(--mono); font-size:11px; background:var(--surface-2); color:var(--ink-soft); padding:4px 9px; border-radius:6px; flex:none;}
+  .erd-box.small{padding:16px; margin-top:6px;}
+
+  /* ---- order exercise (Module 3) ---- */
+  .order-exercise{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:22px;}
+  .order-chips{display:flex; flex-direction:column; gap:8px; margin-bottom:18px;}
+  .order-chip{
+    display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:9px; border:1.5px solid var(--line);
+    background:var(--bg); cursor:pointer; font-size:13.5px; color:var(--ink); transition:all .15s;
+  }
+  .order-chip:hover{border-color:var(--teal);}
+  .order-chip .badge{
+    width:24px; height:24px; border-radius:50%; background:var(--surface-2); color:var(--ink-faint); flex:none;
+    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:12px; font-weight:600;
+  }
+  .order-chip.selected .badge{background:var(--ink); color:#fff;}
+  .order-chip.correct{background:var(--teal-tint); border-color:var(--teal);}
+  .order-chip.correct .badge{background:var(--teal); color:#fff;}
+  .order-chip.incorrect{background:var(--coral-tint); border-color:#E8A99C;}
+  .order-chip.incorrect .badge{background:var(--coral); color:#fff;}
+  .order-actions{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .order-result{font-size:13.5px; font-weight:600; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<div class="mobile-bar">
+  <div class="sidebar-brand" style="border:none;padding:0;margin:0;">
+    <div class="brand-mark"><span></span></div>
+    <div><div class="name">AI di Meja Kerja</div></div>
+  </div>
+  <button onclick="document.getElementById('sidebar').classList.toggle('open')">&#9776; Daftar Isi</button>
+</div>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark"><span></span></div>
+      <div>
+        <div class="name">AI di Meja Kerja</div>
+        <div class="sub">modul 1 &middot; pendahuluan</div>
+      </div>
+    </div>
+    <a class="home-link" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      Kembali ke beranda
+    </a>
+    <div class="tree-item" data-target="pendahuluan"><span class="num">00</span> Pendahuluan</div>
+    <div class="tree-item" data-target="module-1"><span class="num">01</span> Kenali AI</div>
+    <div class="tree-item" data-target="module-2"><span class="num">02</span> Prompting</div>
+    <div class="tree-item" data-target="module-3"><span class="num">03</span> Diagram Alur</div>
+    <div class="tree-item" data-target="module-4"><span class="num">04</span> Database</div>
+    <div class="tree-item" data-target="module-5"><span class="num">05</span> Bangun App</div>
+    <div class="tree-item" data-target="module-6"><span class="num">06</span> Hosting</div>
+    <div class="tree-item" data-target="module-7"><span class="num">07</span> Etika</div>
+    <div class="tree-item" data-target="quiz"><span class="num">08</span> Kuis Recap</div>
+  </aside>
+
+  <main class="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="pendahuluan">
+  <div class="wrap">
+    <span class="eyebrow">Bahan Ajar Interaktif — Perkantoran</span>
+    <h1>Belajar memakai AI di kantor,<br>dari <em>prompt pertama</em> sampai <em>aplikasi tayang</em>.</h1>
+    <p class="hero-sub">Tujuh modul singkat yang membawamu dari "apa itu AI" sampai punya aplikasi web sederhana buatan sendiri — lengkap dengan diagram alur, contoh prompt kantor, dan kuis cepat.</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" onclick="document.getElementById('module-1').scrollIntoView()">Mulai dari Modul 1 →</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('rail').scrollIntoView()">Lihat peta belajar</button>
+    </div>
+
+    <div class="console">
+      <div class="console-bar"><span></span><span></span><span></span></div>
+      <div class="console-body">
+        <div class="console-label">contoh prompt kantor</div>
+        <div class="console-prompt" id="consolePrompt"><span class="cursor"></span></div>
+        <div class="console-output" id="consoleOutput"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RAIL NAV ============ -->
+<section class="rail-section" id="rail">
+  <div class="wrap">
+    <div class="rail" id="railNav"></div>
+  </div>
+</section>
+
+<!-- ============ MODULE 1 ============ -->
+<section class="module" id="module-1">
+  <div class="wrap">
+    <div class="module-head">
+      <span class="module-num">MODUL 01</span>
+      <div>
+        <h2>Mengenal AI: bisa apa, dan tidak bisa apa</h2>
+        <p class="module-desc">Sebelum memakainya, kenali dulu batas kemampuannya — supaya tahu kapan AI benar-benar membantu dan kapan tetap butuh tangan manusia.</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card good">
+        <h4>Yang bisa dilakukan AI</h4>
+        <ul>
+          <li>Menulis dan merevisi surat dinas, email, draf laporan</li>
+          <li>Meringkas dokumen panjang dan notulen rapat</li>
+          <li>Merapikan dan menganalisis data tabel (mis. rekap Excel)</li>
+          <li>Membuat kode program dan aplikasi sederhana</li>
+          <li>Brainstorming ide dan menyusun kerangka kerja</li>
+          <li>Menerjemahkan dan menyunting bahasa</li>
+        </ul>
+      </div>
+      <div class="card warn">
+        <h4>Keterbatasan AI</h4>
+        <ul>
+          <li>Bisa "berhalusinasi" — jawab dengan yakin walau salah</li>
+          <li>Pengetahuannya terbatas hingga tanggal tertentu</li>
+          <li>Tidak otomatis tahu konteks internal instansimu</li>
+          <li>Tidak boleh diberi data pribadi/rahasia sembarangan</li>
+          <li>Tidak bisa menggantikan keputusan dan tanggung jawab manusia</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-top:18px;">
+      <div class="card">
+        <span class="tag cocok">Cocok untuk AI</span>
+        <h4 style="margin-bottom:6px;">Menyusun draf notulen rapat</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">Rekaman/poin rapat bisa diringkas AI dalam hitungan detik, tinggal kamu koreksi.</p>
+      </div>
+      <div class="card">
+        <span class="tag cocok">Cocok untuk AI</span>
+        <h4 style="margin-bottom:6px;">Merapikan rumus & format tabel</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">AI membantu menyusun rumus, membersihkan data kotor, atau membuat ringkasan pivot.</p>
+      </div>
+      <div class="card">
+        <span class="tag manusia">Tetap perlu manusia</span>
+        <h4 style="margin-bottom:6px;">Menandatangani & mengambil keputusan resmi</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">AI bisa menyiapkan bahan pertimbangan, tapi keputusan dan tanggung jawab tetap milikmu.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:26px;">
+      <h4 style="margin-bottom:8px;">Kenapa AI bisa "berhalusinasi"?</h4>
+      <p style="font-size:14px; color:var(--ink-soft);">AI generatif bekerja dengan menebak kata berikutnya berdasarkan pola statistik dari data latihannya — <strong>bukan</strong> mencari fakta seperti mesin pencari. Kalau kamu bertanya "berapa jumlah usaha hasil SE2026 di Kecamatan Cakung minggu ini?" tanpa melampirkan datanya, AI tidak benar-benar "tahu" — ia menebak angka yang terdengar masuk akal. Aturan amannya sederhana: kalau AI diminta <em>menghitung dari data yang kamu lampirkan</em>, hasilnya relatif bisa dipercaya. Kalau AI diminta <em>mengingat angka dari pengetahuan umumnya</em>, itu wajib dicurigai dan dicek ulang.</p>
+    </div>
+
+    <h3 style="font-size:19px; margin:34px 0 14px;">Studi kasus — verifikasi tetap wajib</h3>
+    <div class="grid-2">
+      <div class="card good">
+        <h4>Aman: AI mengolah data yang kamu berikan</h4>
+        <ul>
+          <li>Melampirkan file rekap progres FASIH-SM lalu minta AI susun narasi laporan mingguannya</li>
+          <li>Melampirkan tabel PODES per kelurahan untuk dibandingkan dan diringkas ke Word</li>
+          <li>Meminta AI merapikan rumus SUMIFS di rekap sisa cuti pegawai</li>
+        </ul>
+      </div>
+      <div class="card warn">
+        <h4>Berisiko: AI mengarang dari "ingatannya"</h4>
+        <ul>
+          <li>Bertanya angka capaian pendataan tanpa melampirkan data sumber</li>
+          <li>Meminta AI menyimpulkan kecamatan mana yang paling rendah progresnya tanpa data terbaru</li>
+          <li>Menerima ringkasan angka statistik dari AI lalu langsung ditempel ke laporan resmi tanpa dicocokkan ke sumbernya — termasuk saat data sumber sendiri ternyata tidak konsisten (misalnya total Prelist Keluarga vs Ditemukan yang tidak sinkron), yang justru baru ketahuan setelah dicek manual</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODULE 2 ============ -->
+<section class="module" id="module-2">
+  <div class="wrap">
+    <div class="module-head">
+      <span class="module-num">MODUL 02</span>
+      <div>
+        <h2>Seni bertanya: cara <em>prompting</em> yang efektif</h2>
+        <p class="module-desc">Hasil AI sebaik instruksi yang kamu berikan. Empat bagian ini membuat instruksimu jauh lebih tajam.</p>
+      </div>
+    </div>
+
+    <div class="anatomy">
+      <div class="abox"><span class="letter">01</span><h5>Konteks</h5><p>Siapa kamu, situasi apa. "Saya staf IPDS, sedang menyusun laporan bulanan."</p></div>
+      <div class="arrow-between">→</div>
+      <div class="abox"><span class="letter">02</span><h5>Tugas</h5><p>Apa persisnya yang diminta. "Ringkas 5 halaman ini jadi poin-poin utama."</p></div>
+      <div class="arrow-between">→</div>
+      <div class="abox"><span class="letter">03</span><h5>Format</h5><p>Bentuk hasil yang diinginkan. "Dalam tabel, 3 kolom: topik, temuan, rekomendasi."</p></div>
+      <div class="arrow-between">→</div>
+      <div class="abox"><span class="letter">04</span><h5>Batasan</h5><p>Panjang, gaya bahasa, hal yang dihindari. "Maksimal 200 kata, bahasa formal."</p></div>
+    </div>
+
+    <div class="compare">
+      <div class="box bad"><span class="lbl">Prompt lemah</span><p>"Buatkan surat undangan rapat."</p></div>
+      <div class="box best"><span class="lbl">Prompt kuat</span><p>"Saya Kepala IPDS di BPS Kota Jakarta Timur. Buatkan draf surat undangan rapat koordinasi SE2026 untuk 10 kecamatan, Kamis pukul 09.00 di kantor. Format surat dinas resmi, maksimal 1 halaman."</p></div>
+    </div>
+
+    <div class="card" style="margin-top:24px;">
+      <h4 style="margin-bottom:8px;">Lapis kelima: lampirkan data, jangan diceritakan ulang</h4>
+      <p style="font-size:14px; color:var(--ink-soft);">Begitu tugasmu melibatkan angka atau data tabel, kekuatan prompt naik drastis kalau <strong>filenya dilampirkan langsung</strong>, bukan diceritakan dengan kata-kata. AI yang membaca file sumber akan mengolah data sungguhan; AI yang hanya dikasih cerita tentang data akan menebak-nebak.</p>
+      <div class="compare" style="margin-top:16px;">
+        <div class="box bad"><span class="lbl">Data diceritakan ulang</span><p>"Progres SE2026 minggu ini kira-kira turun dibanding minggu lalu, tolong buatkan laporannya."</p></div>
+        <div class="box best"><span class="lbl">Data dilampirkan</span><p>"Berikut file Monitoring_7_Agustus_2026.xlsx (sheet Sheet1). Bandingkan dengan baseline 31 Juli yang saya lampirkan. Susun laporan Word: ringkasan per kecamatan, daftar PPL progres di bawah 40%, dan tandai bila ada anomali data."</p></div>
+      </div>
+    </div>
+
+    <h3 style="font-size:19px; margin:34px 0 14px;">Pola prompt untuk dokumen kantor yang sering dibuat</h3>
+    <table class="htable">
+      <thead><tr><th>Jenis dokumen</th><th>Konteks</th><th>Tugas</th><th>Format &amp; batasan</th></tr></thead>
+      <tbody>
+        <tr><td>Surat dinas</td><td>Jabatan &amp; unit kerja</td><td>Perihal dan tujuan surat</td><td>Format surat dinas resmi, bernomor, maksimal 1 halaman</td></tr>
+        <tr><td>Notulen rapat</td><td>Nama rapat &amp; peserta</td><td>Ringkas jadi poin tindak lanjut</td><td>Poin bernomor, sertakan penanggung jawab &amp; tenggat</td></tr>
+        <tr><td>Laporan progres lapangan</td><td>Nama kegiatan (SE2026/PODES/Sakernas) &amp; periode</td><td>Bandingkan data periode ini vs sebelumnya (data dilampirkan)</td><td>Tabel per kecamatan/kelurahan, tandai anomali</td></tr>
+        <tr><td>SPJ / dokumen pembayaran</td><td>Nama kegiatan &amp; termin</td><td>Susun berdasarkan data petugas terlampir</td><td>Sesuai template resmi instansi</td></tr>
+      </tbody>
+    </table>
+
+    <div class="builder">
+      <h4 style="margin-bottom:16px; font-size:15px;">Coba susun prompt sendiri</h4>
+      <div class="builder-controls">
+        <div>
+          <label>Konteks</label>
+          <select id="bCtx" onchange="updateBuilder()">
+            <option value="Saya staf Data Processing di kantor statistik">Staf data processing</option>
+            <option value="Saya Kepala Seksi yang menyiapkan bahan rapat pimpinan">Kepala seksi</option>
+            <option value="Saya petugas lapangan yang baru selesai kunjungan responden">Petugas lapangan</option>
+          </select>
+        </div>
+        <div>
+          <label>Tugas</label>
+          <select id="bTask" onchange="updateBuilder()">
+            <option value="ringkas notulen rapat ini jadi poin tindak lanjut">Ringkas notulen</option>
+            <option value="buatkan draf surat dinas untuk undangan rapat">Buat surat dinas</option>
+            <option value="periksa dan rapikan rumus di tabel rekap data ini">Rapikan tabel data</option>
+          </select>
+        </div>
+        <div>
+          <label>Format & batasan</label>
+          <select id="bFmt" onchange="updateBuilder()">
+            <option value="dalam bentuk poin, maksimal 5 poin, bahasa formal">Poin singkat, formal</option>
+            <option value="dalam tabel 3 kolom, bahasa lugas">Tabel 3 kolom</option>
+            <option value="1 paragraf, nada sopan dan ringkas">1 paragraf ringkas</option>
+          </select>
+        </div>
+      </div>
+      <div class="builder-out" id="builderOut"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODULE 3 ============ -->
+<section class="module" id="module-3">
+  <div class="wrap">
+    <div class="module-head">
+      <span class="module-num">MODUL 03</span>
+      <div>
+        <h2>Dari ide ke aplikasi: memahami diagram alur</h2>
+        <p class="module-desc">Sebelum minta AI membuatkan aplikasi, gambar dulu alurnya di kertas. Modul ini membahas tiap simbol satu per satu, dua contoh nyata, jebakan yang sering terjadi, dan latihan menyusun alur sendiri.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:28px;">
+      <h4 style="margin-bottom:8px;">Kenapa harus repot menggambar diagram dulu?</h4>
+      <p style="font-size:14px; color:var(--ink-soft);">AI bekerja seperti pegawai baru yang sangat cepat tapi tidak tahu kebiasaan kantormu. Kalau kamu hanya bilang "buatkan aplikasi cuti", AI akan menebak-nebak alurnya sendiri — hasilnya sering meleset. Tapi kalau kamu sudah punya diagram alur yang jelas, tinggal "terjemahkan" kotak-kotaknya jadi prompt. Aplikasi yang dihasilkan jauh lebih sesuai kebutuhan, dan revisinya lebih sedikit. Empat simbol ini sebenarnya bahasa universal yang juga dipakai di dunia sistem informasi (dikenal sebagai notasi flowchart/BPMN) — jadi kalau kamu sudah menguasainya, kamu juga akan lebih mudah membaca dokumentasi alur sistem buatan orang lain.</p>
+    </div>
+
+    <h3 style="font-size:19px; margin-bottom:6px;">Empat simbol dasar</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-bottom:16px;">Klik tiap kartu untuk membuka penjelasan dan contohnya.</p>
+    <div class="shape-grid">
+      <details class="shape-card" open>
+        <summary>
+          <svg class="legend-shape" viewBox="0 0 20 20"><ellipse cx="10" cy="10" rx="9" ry="7" fill="#E3F3F2" stroke="#0E7C86" stroke-width="1.5"/></svg>
+          <span>Oval — Mulai / Selesai</span>
+        </summary>
+        <div class="shape-body">
+          <p>Menandai <strong>titik awal</strong> atau <strong>titik akhir</strong> sebuah proses. Setiap diagram alur harus punya tepat satu titik mulai, dan boleh punya lebih dari satu titik selesai (tergantung berapa kemungkinan hasil akhirnya).</p>
+          <p class="ex">Contoh: "Pegawai mulai mengajukan cuti" · "Proses verifikasi selesai"</p>
+        </div>
+      </details>
+      <details class="shape-card">
+        <summary>
+          <svg class="legend-shape" viewBox="0 0 20 20"><rect x="2" y="4" width="16" height="12" rx="2" fill="#EEF1F8" stroke="#4B5670" stroke-width="1.5"/></svg>
+          <span>Persegi panjang — Proses</span>
+        </summary>
+        <div class="shape-body">
+          <p>Satu langkah kegiatan atau tindakan yang dilakukan sistem atau orang. Satu kotak proses idealnya berisi <strong>satu tindakan saja</strong> — kalau ada dua tindakan, pisah jadi dua kotak.</p>
+          <p class="ex">Contoh: "Sistem menghitung sisa cuti" · "Atasan menandatangani surat"</p>
+        </div>
+      </details>
+      <details class="shape-card">
+        <summary>
+          <svg class="legend-shape" viewBox="0 0 20 20"><polygon points="10,2 18,10 10,18 2,10" fill="#FDEEE0" stroke="#F2994A" stroke-width="1.5"/></svg>
+          <span>Diamond — Keputusan</span>
+        </summary>
+        <div class="shape-body">
+          <p>Titik cabang dengan jawaban <strong>ya/tidak</strong> atau <strong>benar/salah</strong>. Wajib punya minimal dua anak panah keluar — satu untuk tiap kemungkinan jawaban. Diamond tanpa dua jalur keluar adalah kesalahan paling umum pemula.</p>
+          <p class="ex">Contoh: "Sisa cuti mencukupi?" · "Data lengkap?"</p>
+        </div>
+      </details>
+      <details class="shape-card">
+        <summary>
+          <svg class="legend-shape" viewBox="0 0 20 20"><polygon points="5,4 18,4 15,16 2,16" fill="#FCE7E3" stroke="#E85D4C" stroke-width="1.5"/></svg>
+          <span>Jajaran genjang — Input / Output</span>
+        </summary>
+        <div class="shape-body">
+          <p>Data yang <strong>dimasukkan</strong> ke sistem oleh orang, atau data yang <strong>dikeluarkan</strong> sistem untuk dibaca orang. Berbeda dengan proses — jajaran genjang bukan tindakan, tapi data itu sendiri.</p>
+          <p class="ex">Contoh: "Pegawai mengisi form alasan cuti" · "Sistem menampilkan sisa cuti"</p>
+        </div>
+      </details>
+    </div>
+
+    <h3 style="font-size:19px; margin:34px 0 4px;">Contoh 1 — Alur pengajuan cuti</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-bottom:6px;">Klik tiap kotak di diagram untuk melihat penjelasannya.</p>
+    <div class="flow-wrap">
+      <div class="flow-svg-box">
+        <svg viewBox="0 0 460 340" width="100%" style="font-family:'IBM Plex Sans',sans-serif;">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#8A93AB"/></marker>
+          </defs>
+          <line x1="230" y1="46" x2="230" y2="72" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow)"/>
+          <line x1="230" y1="112" x2="230" y2="138" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow)"/>
+          <line x1="230" y1="196" x2="120" y2="238" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow)"/>
+          <line x1="270" y1="196" x2="340" y2="238" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow)"/>
+          <line x1="120" y1="270" x2="120" y2="298" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow)"/>
+          <line x1="340" y1="270" x2="340" y2="298" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow)"/>
+          <text x="95" y="230" font-size="10.5" fill="#B8402E" font-family="IBM Plex Mono">tidak</text>
+          <text x="345" y="230" font-size="10.5" fill="#0A5F67" font-family="IBM Plex Mono">ya</text>
+
+          <g class="fnode" data-info="start"><ellipse cx="230" cy="26" rx="66" ry="20" fill="#E3F3F2" stroke="#0E7C86" stroke-width="1.6"/><text x="230" y="31" text-anchor="middle" font-size="12" fill="#0A5F67">Pegawai ajukan cuti</text></g>
+          <g class="fnode" data-info="input"><polygon points="164,72 296,72 284,112 176,112" fill="#FDEEE0" stroke="#F2994A" stroke-width="1.6"/><text x="230" y="96" text-anchor="middle" font-size="12" fill="#B8631C">Isi form &amp; alasan cuti</text></g>
+          <g class="fnode" data-info="decision"><polygon points="230,138 300,167 230,196 160,167" fill="#EEF1F8" stroke="#4B5670" stroke-width="1.6"/><text x="230" y="171" text-anchor="middle" font-size="11.5" fill="#10192E">Disetujui atasan?</text></g>
+          <g class="fnode" data-info="reject"><rect x="55" y="238" width="130" height="32" rx="6" fill="#FCE7E3" stroke="#E85D4C" stroke-width="1.6"/><text x="120" y="258" text-anchor="middle" font-size="12" fill="#B8402E">Kembalikan + alasan</text></g>
+          <g class="fnode" data-info="approve"><rect x="275" y="238" width="130" height="32" rx="6" fill="#E3F3F2" stroke="#0E7C86" stroke-width="1.6"/><text x="340" y="258" text-anchor="middle" font-size="12" fill="#0A5F67">Terbitkan surat cuti</text></g>
+          <g class="fnode" data-info="end1"><ellipse cx="120" cy="316" rx="60" ry="18" fill="#EEF1F8" stroke="#4B5670" stroke-width="1.6"/><text x="120" y="320" text-anchor="middle" font-size="11.5" fill="#10192E">Selesai — revisi</text></g>
+          <g class="fnode" data-info="end2"><ellipse cx="340" cy="316" rx="60" ry="18" fill="#EEF1F8" stroke="#4B5670" stroke-width="1.6"/><text x="340" y="320" text-anchor="middle" font-size="11.5" fill="#10192E">Selesai — cuti aktif</text></g>
+        </svg>
+      </div>
+      <div class="flow-info">
+        <div class="flow-title" id="flowTitle">Klik salah satu kotak di diagram</div>
+        <p id="flowDesc">Setiap bentuk punya arti berbeda. Perhatikan diamond "Disetujui atasan?" — ia punya dua anak panah keluar berlabel <span class="mono">ya</span> dan <span class="mono">tidak</span>, masing-masing menuju proses yang berbeda.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:19px; margin:34px 0 4px;">Contoh 2 — Verifikasi kuesioner survei</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-bottom:6px;">Alur ini lebih dekat dengan pekerjaan sehari-hari di BPS: dua kali pengecekan, dua kemungkinan jalan keluar.</p>
+    <div class="flow-wrap">
+      <div class="flow-svg-box">
+        <svg viewBox="0 0 460 400" width="100%" style="font-family:'IBM Plex Sans',sans-serif;">
+          <defs>
+            <marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#8A93AB"/></marker>
+          </defs>
+          <line x1="230" y1="46" x2="230" y2="72" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow2)"/>
+          <line x1="230" y1="112" x2="230" y2="138" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow2)"/>
+          <line x1="192" y1="167" x2="90" y2="167" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow2)"/>
+          <line x1="90" y1="167" x2="90" y2="26" stroke="#8A93AB" stroke-width="1.4"/>
+          <line x1="90" y1="26" x2="164" y2="26" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow2)"/>
+          <line x1="230" y1="196" x2="230" y2="222" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow2)"/>
+          <line x1="230" y1="262" x2="230" y2="288" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow2)"/>
+          <line x1="192" y1="317" x2="120" y2="317" stroke="#8A93AB" stroke-width="1.4"/>
+          <line x1="120" y1="317" x2="120" y2="70" stroke="#8A93AB" stroke-width="1.4"/>
+          <line x1="120" y1="70" x2="176" y2="88" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow2)"/>
+          <line x1="268" y1="317" x2="340" y2="317" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow2)"/>
+          <line x1="340" y1="317" x2="340" y2="356" stroke="#8A93AB" stroke-width="1.4" marker-end="url(#arrow2)"/>
+          <text x="35" y="120" font-size="10" fill="#B8402E" font-family="IBM Plex Mono">tidak lengkap</text>
+          <text x="140" y="200" font-size="10" fill="#B8402E" font-family="IBM Plex Mono">ada anomali</text>
+          <text x="290" y="310" font-size="10" fill="#0A5F67" font-family="IBM Plex Mono">valid</text>
+
+          <g class="fnode2" data-info2="start"><ellipse cx="230" cy="26" rx="66" ry="20" fill="#E3F3F2" stroke="#0E7C86" stroke-width="1.6"/><text x="230" y="31" text-anchor="middle" font-size="12" fill="#0A5F67">Terima kuesioner</text></g>
+          <g class="fnode2" data-info2="check1"><polygon points="230,138 300,167 230,196 160,167" fill="#EEF1F8" stroke="#4B5670" stroke-width="1.6"/><text x="230" y="164" text-anchor="middle" font-size="10.5" fill="#10192E">Isian lengkap?</text><text x="230" y="177" text-anchor="middle" font-size="10.5" fill="#10192E">semua halaman</text></g>
+          <g class="fnode2" data-info2="entry"><rect x="180" y="222" width="100" height="34" rx="6" fill="#EEF1F8" stroke="#4B5670" stroke-width="1.6"/><text x="230" y="243" text-anchor="middle" font-size="11.5" fill="#10192E">Entry data ke sistem</text></g>
+          <g class="fnode2" data-info2="check2"><polygon points="230,288 300,317 230,346 160,317" fill="#EEF1F8" stroke="#4B5670" stroke-width="1.6"/><text x="230" y="314" text-anchor="middle" font-size="10.5" fill="#10192E">Lolos validasi</text><text x="230" y="327" text-anchor="middle" font-size="10.5" fill="#10192E">otomatis sistem?</text></g>
+          <g class="fnode2" data-info2="end1"><ellipse cx="90" cy="26" rx="0" ry="0" opacity="0"/></g>
+          <g class="fnode2" data-info2="flag"><rect x="55" y="140" width="130" height="34" rx="6" fill="#FCE7E3" stroke="#E85D4C" stroke-width="1.6"/><text x="120" y="161" text-anchor="middle" font-size="11.5" fill="#B8402E">Tandai untuk dicek ulang</text></g>
+          <g class="fnode2" data-info2="save"><rect x="275" y="288" width="130" height="34" rx="6" fill="#E3F3F2" stroke="#0E7C86" stroke-width="1.6"/><text x="340" y="309" text-anchor="middle" font-size="11.5" fill="#0A5F67">Simpan ke database</text></g>
+          <g class="fnode2" data-info2="end2"><ellipse cx="340" cy="374" rx="60" ry="18" fill="#EEF1F8" stroke="#4B5670" stroke-width="1.6"/><text x="340" y="378" text-anchor="middle" font-size="11.5" fill="#10192E">Selesai</text></g>
+        </svg>
+      </div>
+      <div class="flow-info">
+        <div class="flow-title" id="flowTitle2">Klik salah satu kotak di diagram</div>
+        <p id="flowDesc2">Perhatikan: proses ini punya <strong>dua</strong> titik keputusan berturut-turut — pengecekan kelengkapan dulu, baru validasi otomatis. Kalau salah satu gagal, alur kembali mengulang, bukan langsung berhenti.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:19px; margin:34px 0 6px;">Contoh 3 — Validasi anomali data pendataan lapangan</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-bottom:14px;">Contoh ini menunjukkan alur yang biasa dipakai di sistem monitoring pendataan: bukan cuma cek "benar/salah", tapi mengelompokkan hasil ke beberapa kategori sekaligus.</p>
+    <div class="card">
+      <ol style="margin:0; padding-left:20px; display:flex; flex-direction:column; gap:10px; font-size:13.5px; color:var(--ink-soft);">
+        <li><strong style="color:var(--ink);">Mulai</strong> — data hasil sinkronisasi harian diterima sistem</li>
+        <li><strong style="color:var(--ink);">Proses</strong> — bandingkan progres tiap satuan wilayah dengan data wilayah kerja (wilkerstat)</li>
+        <li><strong style="color:var(--ink);">Keputusan</strong> — progres wilayah = 0% padahal sudah lewat tenggat? → <span class="mono" style="font-size:12px;">ya</span>: tandai sebagai anomali "progres nol", catat petugas &amp; pengawas terkait &nbsp;|&nbsp; <span class="mono" style="font-size:12px;">tidak</span>: lanjut ke pengecekan berikutnya</li>
+        <li><strong style="color:var(--ink);">Keputusan</strong> — muatan data ekonomi = 0 padahal status sudah selesai? → <span class="mono" style="font-size:12px;">ya</span>: tandai sebagai anomali "muatan kosong" &nbsp;|&nbsp; <span class="mono" style="font-size:12px;">tidak</span>: data dianggap wajar</li>
+        <li><strong style="color:var(--ink);">Selesai</strong> — setiap kategori anomali tersimpan terpisah, siap dipakai tim monitoring untuk tindak lanjut ke petugas lapangan</li>
+      </ol>
+      <p style="font-size:13px; color:var(--ink-faint); margin-top:14px; padding-top:14px; border-top:1px dashed var(--line);">Perhatikan: di sini ada <strong>dua keputusan berurutan yang menghasilkan kategori berbeda</strong>, bukan cuma satu jalur ya/tidak. Ini pola yang sering muncul begitu kebutuhan monitoring makin detail — dan kalau digambar dulu di atas kertas, permintaan ke AI untuk membuat query atau fiturnya jadi jauh lebih presisi.</p>
+    </div>
+
+    <h3 style="font-size:19px; margin:34px 0 12px;">Kesalahan umum yang perlu dihindari</h3>
+    <div class="grid-2">
+      <div class="card warn">
+        <h4>Diamond dengan satu jalur keluar</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">Setiap keputusan wajib punya jawaban untuk <em>kedua</em> kemungkinan. Kalau jalur "tidak" tidak digambar, AI tidak tahu apa yang terjadi bila jawabannya tidak.</p>
+      </div>
+      <div class="card warn">
+        <h4>Kotak proses yang menggantung</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">Setiap kotak proses harus punya anak panah masuk dan keluar. Kotak tanpa panah keluar berarti alur "buntu" — pengguna terjebak di situ.</p>
+      </div>
+      <div class="card warn">
+        <h4>Tidak ada titik mulai/selesai yang jelas</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">Tanpa oval "mulai" dan "selesai", AI sulit menebak batas satu proses — apalagi kalau alurnya nanti digabung dengan proses lain.</p>
+      </div>
+      <div class="card warn">
+        <h4>Alur muter tanpa syarat keluar</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">Loop pengulangan boleh saja (misalnya "cek ulang"), tapi harus ada syarat yang akhirnya membawa alur keluar dari putaran — jangan sampai berputar selamanya.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:19px; margin:34px 0 6px;">Latihan — susun urutan alurnya</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-bottom:16px;">Proses: <strong>pegawai mengajukan izin keluar kantor sementara.</strong> Klik kotak-kotak di bawah sesuai urutan yang menurutmu benar, lalu tekan "Cek jawaban".</p>
+    <div class="order-exercise">
+      <div class="order-chips" id="orderChips"></div>
+      <div class="order-actions">
+        <button class="btn btn-primary" style="padding:10px 20px; font-size:13.5px;" onclick="checkOrder()">Cek jawaban</button>
+        <button class="btn btn-ghost" style="padding:10px 20px; font-size:13.5px;" onclick="resetOrder()">Ulangi</button>
+        <span id="orderResult" class="order-result"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODULE 4 ============ -->
+<section class="module" id="module-4">
+  <div class="wrap">
+    <div class="module-head">
+      <span class="module-num">MODUL 04</span>
+      <div>
+        <h2>Memahami konsep database</h2>
+        <p class="module-desc">Aplikasi butuh tempat menyimpan data. Modul ini membahas mulai dari analogi lemari arsip, kunci unik, tiga jenis hubungan antar tabel, sampai empat operasi dasar yang dilakukan aplikasi apa pun.</p>
+      </div>
+    </div>
+
+    <div class="db-analogy">
+      <div class="card"><h4>🗄️ Tabel = Lemari arsip</h4><p style="font-size:13.5px;color:var(--ink-soft);">Satu lemari untuk satu jenis data, misalnya lemari "Pegawai" atau lemari "Cuti".</p></div>
+      <div class="card"><h4>📁 Baris = Satu map/folder</h4><p style="font-size:13.5px;color:var(--ink-soft);">Satu baris data mewakili satu pegawai atau satu pengajuan cuti.</p></div>
+      <div class="card"><h4>🏷️ Kolom = Label info</h4><p style="font-size:13.5px;color:var(--ink-soft);">Kolom menyimpan satu jenis informasi: nama, NIP, tanggal, status.</p></div>
+    </div>
+
+    <p class="table-caption">Klik judul kolom untuk menyorotnya. Kolom <span class="mono">id</span> ditandai kunci utama →</p>
+    <table class="data-table" id="dataTable">
+      <thead><tr>
+        <th data-col="0">id_pegawai <span class="key-badge pk">PK</span></th><th data-col="1">nama</th><th data-col="2">jabatan</th><th data-col="3">sisa_cuti</th>
+      </tr></thead>
+      <tbody>
+        <tr><td data-col="0">P001</td><td data-col="1">Siti Aminah</td><td data-col="2">Statistisi</td><td data-col="3">9</td></tr>
+        <tr><td data-col="0">P002</td><td data-col="1">Budi Santoso</td><td data-col="2">Pranata Komputer</td><td data-col="3">12</td></tr>
+        <tr><td data-col="0">P003</td><td data-col="1">Rina Wulandari</td><td data-col="2">Statistisi</td><td data-col="3">6</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size:19px; margin:34px 0 14px;">Dua istilah kunci: PK dan FK</h3>
+    <div class="grid-2">
+      <div class="card key-card">
+        <span class="key-badge pk">PK</span>
+        <h4 style="margin:10px 0 6px;">Primary Key — nomor unik penanda</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">Setiap baris butuh satu penanda yang <strong>dijamin tidak ada kembarannya</strong> — persis seperti NIP pegawai. Dua orang boleh bernama sama, tapi NIP-nya pasti berbeda. Tanpa kunci unik ini, sistem bisa bingung "Budi yang mana?" saat ada dua Budi.</p>
+      </div>
+      <div class="card key-card">
+        <span class="key-badge fk">FK</span>
+        <h4 style="margin:10px 0 6px;">Foreign Key — kartu rujukan antar lemari</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">Folder di lemari "Cuti" tidak perlu menyalin ulang seluruh data pegawai — cukup selipkan secarik kertas bertuliskan <span class="mono">id_pegawai</span>-nya. Kartu rujukan inilah yang menghubungkan dua lemari tanpa data ganda.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:19px; margin:34px 0 6px;">Latihan — kenali kunci utama</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-bottom:14px;">Dari tabel di bawah, kolom mana yang paling tepat dijadikan Primary Key? Klik salah satu judul kolom.</p>
+    <table class="data-table" id="pkTable">
+      <thead><tr>
+        <th data-col="nama">nama</th><th data-col="nip">nip</th><th data-col="jabatan">jabatan</th><th data-col="email">email</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Andi Wijaya</td><td>19870512...</td><td>Statistisi</td><td>andi@bps.go.id</td></tr>
+        <tr><td>Andi Wijaya</td><td>19910203...</td><td>Pranata Komputer</td><td>andi.w@bps.go.id</td></tr>
+      </tbody>
+    </table>
+    <p id="pkResult" class="order-result" style="display:block; margin-top:12px;"></p>
+
+    <h3 style="font-size:19px; margin:40px 0 6px;">Tiga jenis hubungan antar tabel</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-bottom:18px;">Klik tiap kartu untuk melihat diagramnya.</p>
+
+    <details class="relation-card" open>
+      <summary><span class="rel-tag">1 — 1</span> Satu-ke-satu — Pegawai &amp; Akun login</summary>
+      <div class="shape-body">
+        <p>Satu pegawai punya <strong>tepat satu</strong> akun login, dan satu akun login hanya milik satu pegawai. Jenis relasi ini paling jarang dipakai — biasanya data seperti ini malah digabung jadi satu tabel saja.</p>
+        <div class="erd-box small">
+          <svg viewBox="0 0 420 100" width="100%" style="max-width:420px; font-family:'IBM Plex Sans',sans-serif;">
+            <rect x="20" y="20" width="140" height="60" rx="8" fill="#E3F3F2" stroke="#0E7C86" stroke-width="1.6"/>
+            <text x="90" y="45" text-anchor="middle" font-size="12.5" font-weight="600" fill="#0A5F67">Pegawai</text>
+            <text x="90" y="63" text-anchor="middle" font-size="10" fill="#4B5670">id_pegawai (PK)</text>
+            <rect x="260" y="20" width="140" height="60" rx="8" fill="#FDEEE0" stroke="#F2994A" stroke-width="1.6"/>
+            <text x="330" y="45" text-anchor="middle" font-size="12.5" font-weight="600" fill="#B8631C">Akun Login</text>
+            <text x="330" y="63" text-anchor="middle" font-size="10" fill="#4B5670">id_pegawai (FK)</text>
+            <line x1="160" y1="50" x2="260" y2="50" stroke="#8A93AB" stroke-width="1.4"/>
+            <text x="175" y="44" font-size="11" fill="#8A93AB">1</text>
+            <text x="235" y="44" font-size="11" fill="#8A93AB">1</text>
+          </svg>
+        </div>
+      </div>
+    </details>
+
+    <details class="relation-card">
+      <summary><span class="rel-tag">1 — N</span> Satu-ke-banyak — Pegawai &amp; Cuti</summary>
+      <div class="shape-body">
+        <p>Satu pegawai bisa mengajukan <strong>banyak</strong> riwayat cuti, tapi satu pengajuan cuti hanya menunjuk pada satu pegawai. Inilah jenis relasi yang paling sering ditemui.</p>
+        <div class="erd-box small">
+          <svg viewBox="0 0 480 130" width="100%" style="max-width:480px; font-family:'IBM Plex Sans',sans-serif;">
+            <rect x="20" y="20" width="150" height="80" rx="10" fill="#E3F3F2" stroke="#0E7C86" stroke-width="1.6"/>
+            <text x="95" y="42" text-anchor="middle" font-size="13" font-weight="600" fill="#0A5F67">Pegawai</text>
+            <line x1="20" y1="50" x2="170" y2="50" stroke="#0E7C86" stroke-width="1"/>
+            <text x="30" y="68" font-size="10.5" fill="#0A5F67">id_pegawai (PK)</text>
+            <text x="30" y="84" font-size="10.5" fill="#4B5670">nama, jabatan</text>
+            <rect x="310" y="20" width="150" height="80" rx="10" fill="#FDEEE0" stroke="#F2994A" stroke-width="1.6"/>
+            <text x="385" y="42" text-anchor="middle" font-size="13" font-weight="600" fill="#B8631C">Cuti</text>
+            <line x1="310" y1="50" x2="460" y2="50" stroke="#F2994A" stroke-width="1"/>
+            <text x="320" y="68" font-size="10.5" fill="#B8631C">id_cuti (PK)</text>
+            <text x="320" y="84" font-size="10.5" fill="#4B5670">id_pegawai (FK)</text>
+            <line x1="170" y1="60" x2="310" y2="60" stroke="#8A93AB" stroke-width="1.4"/>
+            <text x="185" y="54" font-size="11" fill="#8A93AB">1</text>
+            <text x="280" y="54" font-size="11" fill="#8A93AB">banyak</text>
+          </svg>
+        </div>
+      </div>
+    </details>
+
+    <details class="relation-card">
+      <summary><span class="rel-tag">N — M</span> Banyak-ke-banyak — Pegawai &amp; Pelatihan</summary>
+      <div class="shape-body">
+        <p>Satu pegawai bisa mengikuti <strong>banyak</strong> pelatihan, dan satu pelatihan diikuti <strong>banyak</strong> pegawai. Relasi ini butuh <strong>tabel penghubung</strong> di tengah — tempat mencatat pasangan "pegawai mana ikut pelatihan mana".</p>
+        <div class="erd-box small">
+          <svg viewBox="0 0 520 130" width="100%" style="max-width:520px; font-family:'IBM Plex Sans',sans-serif;">
+            <rect x="10" y="20" width="140" height="80" rx="10" fill="#E3F3F2" stroke="#0E7C86" stroke-width="1.6"/>
+            <text x="80" y="42" text-anchor="middle" font-size="13" font-weight="600" fill="#0A5F67">Pegawai</text>
+            <line x1="10" y1="50" x2="150" y2="50" stroke="#0E7C86" stroke-width="1"/>
+            <text x="20" y="68" font-size="10.5" fill="#0A5F67">id_pegawai (PK)</text>
+            <rect x="190" y="20" width="150" height="80" rx="10" fill="#EEF1F8" stroke="#4B5670" stroke-width="1.6"/>
+            <text x="265" y="42" text-anchor="middle" font-size="12.5" font-weight="600" fill="#10192E">Peserta_Pelatihan</text>
+            <line x1="190" y1="50" x2="340" y2="50" stroke="#4B5670" stroke-width="1"/>
+            <text x="200" y="68" font-size="10" fill="#10192E">id_pegawai (FK)</text>
+            <text x="200" y="82" font-size="10" fill="#10192E">id_pelatihan (FK)</text>
+            <rect x="380" y="20" width="140" height="80" rx="10" fill="#FDEEE0" stroke="#F2994A" stroke-width="1.6"/>
+            <text x="450" y="42" text-anchor="middle" font-size="13" font-weight="600" fill="#B8631C">Pelatihan</text>
+            <line x1="380" y1="50" x2="520" y2="50" stroke="#F2994A" stroke-width="1"/>
+            <text x="390" y="68" font-size="10.5" fill="#B8631C">id_pelatihan (PK)</text>
+            <line x1="150" y1="60" x2="190" y2="60" stroke="#8A93AB" stroke-width="1.4"/>
+            <line x1="340" y1="60" x2="380" y2="60" stroke="#8A93AB" stroke-width="1.4"/>
+          </svg>
+        </div>
+      </div>
+    </details>
+
+    <h3 style="font-size:19px; margin:40px 0 14px;">Empat operasi dasar — CRUD</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-bottom:16px;">Hampir semua tombol di aplikasi sebenarnya cuma menjalankan salah satu dari empat hal ini terhadap database.</p>
+    <div class="grid-3">
+      <div class="card"><span class="tag cocok">Create</span><h4 style="margin-bottom:6px;">Tambah data</h4><p style="font-size:13.5px;color:var(--ink-soft);">Mendaftarkan pegawai baru ke sistem.</p></div>
+      <div class="card"><span class="tag">Read</span><h4 style="margin-bottom:6px;">Lihat data</h4><p style="font-size:13.5px;color:var(--ink-soft);">Menampilkan rekap sisa cuti seluruh pegawai.</p></div>
+      <div class="card"><span class="tag">Update</span><h4 style="margin-bottom:6px;">Ubah data</h4><p style="font-size:13.5px;color:var(--ink-soft);">Mengubah status pengajuan jadi "disetujui".</p></div>
+      <div class="card"><span class="tag manusia">Delete</span><h4 style="margin-bottom:6px;">Hapus data</h4><p style="font-size:13.5px;color:var(--ink-soft);">Menghapus data pegawai yang sudah pensiun.</p></div>
+    </div>
+
+    <h3 style="font-size:19px; margin:40px 0 14px;">Dua konsep lanjutan yang sering dipakai di sistem nyata</h3>
+    <div class="grid-2">
+      <div class="card">
+        <h4 style="margin-bottom:8px;">📊 View — rekap yang sudah "dicetak" duluan</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">Kalau tabel adalah lemari arsip asli, <strong>view</strong> adalah rekap ringkasan yang sudah disusun dari beberapa lemari sekaligus — tinggal dibaca, tanpa perlu buka satu-satu map setiap kali. Contohnya: view "progres per kecamatan" yang otomatis menjumlahkan ribuan baris data satuan wilayah kecil jadi angka ringkas per kecamatan, supaya dashboard tidak perlu menghitung ulang dari awal setiap kali dibuka.</p>
+      </div>
+      <div class="card">
+        <h4 style="margin-bottom:8px;">🔒 RLS — siapa boleh baca baris mana</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);"><strong>Row Level Security</strong> mengatur siapa yang boleh melihat baris data tertentu, bukan sekadar tabel mana yang boleh diakses. Ini penting begitu database berisi data yang sifatnya lebih sensitif — misalnya data progres per petugas yang jadi dasar pembayaran. Tanpa aturan ini, siapa pun yang tahu alamat database bisa membaca seluruh isinya.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <h4 style="margin-bottom:8px;">Kunci gabungan (composite key)</h4>
+      <p style="font-size:13.5px; color:var(--ink-soft);">Kadang satu kolom saja tidak cukup untuk jadi Primary Key. Contoh: tabel riwayat harian, di mana satu wilayah bisa punya banyak baris — satu untuk tiap tanggal. Supaya tidak kembar, kunci utamanya adalah <strong>gabungan</strong> dua kolom sekaligus: kode wilayah + tanggal. Baru kombinasi keduanya yang dijamin unik.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODULE 5 ============ -->
+<section class="module" id="module-5">
+  <div class="wrap">
+    <div class="module-head">
+      <span class="module-num">MODUL 05</span>
+      <div>
+        <h2>Membangun web app sederhana bersama AI</h2>
+        <p class="module-desc">Modal utamanya: flowchart dari Modul 3 dan teknik prompting dari Modul 2. Enam langkah ini membawa idemu jadi aplikasi berjalan.</p>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="snum">1</span><div><h5>Tulis deskripsi fitur & alur</h5><p>Pakai flowchart sederhana — cukup coretan: siapa mengisi apa, lalu terjadi apa.</p></div></div>
+      <div class="step"><span class="snum">2</span><div><h5>Susun prompt lengkap ke AI</h5><p>Terapkan pola Konteks → Tugas → Format → Batasan dari Modul 2, sertakan alur dari langkah 1.</p></div></div>
+      <div class="step"><span class="snum">3</span><div><h5>Biarkan AI membuat draf pertama</h5><p>AI menghasilkan tampilan dan logika dasar aplikasi berdasarkan permintaanmu.</p></div></div>
+      <div class="step"><span class="snum">4</span><div><h5>Coba langsung, catat yang kurang</h5><p>Klik-klik semua tombol. Catat bagian yang belum sesuai harapan.</p></div></div>
+      <div class="step"><span class="snum">5</span><div><h5>Revisi lewat prompt lanjutan</h5><p>Minta perbaikan spesifik: "tombol simpan belum berfungsi, tolong perbaiki."</p></div></div>
+      <div class="step"><span class="snum">6</span><div><h5>Uji ke pengguna sungguhan</h5><p>Minta rekan kerja mencoba sebelum dipakai luas — masukan mereka jadi revisi berikutnya.</p></div></div>
+    </div>
+
+    <h3 style="font-size:19px; margin:40px 0 14px;">Dua kebiasaan yang bikin revisi jauh lebih efektif</h3>
+    <div class="grid-2">
+      <div class="card">
+        <h4 style="margin-bottom:8px;">Revisi spesifik, bukan umum</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">"Tolong perbaiki, kurang bagus" membuat AI menebak-nebak lagi. Jauh lebih efektif: sebutkan persis apa yang salah dan bagaimana seharusnya. Misalnya, alih-alih "grafiknya jelek", katakan "grafik garis banyak petugas ini tumpang tindih dan susah dibaca — ganti jadi satu garis rata-rata progres per hari saja".</p>
+      </div>
+      <div class="card">
+        <h4 style="margin-bottom:8px;">Cek gejala vs penyebab sebelum minta perbaikan</h4>
+        <p style="font-size:13.5px; color:var(--ink-soft);">Tidak semua error datang dari kode yang salah. Kadang penyebabnya di luar kendali AI — jaringan kantor yang memblokir suatu alamat internet, izin akses yang belum diaktifkan, atau berkas sumber yang formatnya berubah. Sebelum minta AI menulis ulang logika, cek dulu apakah errornya benar-benar dari kode, atau dari faktor lingkungan yang AI tidak bisa lihat sendiri.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MODULE 6 ============ -->
+<section class="module" id="module-6">
+  <div class="wrap">
+    <div class="module-head">
+      <span class="module-num">MODUL 06</span>
+      <div>
+        <h2>Hosting & deploy: dari laptop ke internet</h2>
+        <p class="module-desc">Aplikasi belum berguna kalau hanya hidup di laptopmu. Hosting membuatnya bisa diakses lewat tautan oleh siapa saja.</p>
+      </div>
+    </div>
+
+    <table class="htable">
+      <thead><tr><th>Jenis hosting</th><th>Cocok untuk</th><th>Yang perlu disiapkan</th></tr></thead>
+      <tbody>
+        <tr><td>Statis</td><td>Halaman informasi, formulir sederhana, dashboard tanpa data tersimpan di server</td><td>Berkas HTML jadi, akun platform hosting gratis</td></tr>
+        <tr><td>Dinamis / aplikasi penuh</td><td>Aplikasi dengan banyak pengguna dan data yang perlu tersimpan permanen</td><td>Server, database, dan sedikit konfigurasi tambahan</td></tr>
+      </tbody>
+    </table>
+
+    <div class="card" style="margin-top:24px;">
+      <h4 style="margin-bottom:8px;">Pola umum: mulai statis, upgrade begitu datanya membesar</h4>
+      <p style="font-size:14px; color:var(--ink-soft);">Kamu tidak harus langsung memilih arsitektur paling rumit di awal. Pola yang sering terjadi: aplikasi dimulai dengan hosting statis yang membaca data dari spreadsheet online sebagai "database" sementara — cukup untuk data yang belum terlalu besar dan diperbarui manual. Begitu volume data membesar (ribuan baris, banyak tabel yang saling berhubungan) atau kebutuhan query makin kompleks (misalnya menghitung ambang batas otomatis untuk dasar pembayaran), barulah bagian datanya dipindah ke database sungguhan, sementara halaman depannya tetap bisa memakai hosting statis yang sama. Jadi upgrade bertahap, bukan dari nol.</p>
+    </div>
+
+    <p class="table-caption" style="margin-top:26px;">Centang tiap tahap deploy yang sudah kamu pahami</p>
+    <div class="checklist" id="checklist"></div>
+  </div>
+</section>
+
+<!-- ============ MODULE 7 ============ -->
+<section class="module" id="module-7">
+  <div class="wrap">
+    <div class="module-head">
+      <span class="module-num">MODUL 07</span>
+      <div>
+        <h2>Etika & kebiasaan baik memakai AI</h2>
+        <p class="module-desc">Penutup singkat sebelum kamu praktik sendiri di kantor.</p>
+      </div>
+    </div>
+    <div class="ethic-card"><div class="ethic-icon">1</div><div><h5 style="font-size:15px; margin-bottom:4px;">Jaga data sensitif</h5><p style="font-size:13.5px; color:var(--ink-soft);">Jangan masukkan NIK, data pribadi, atau dokumen rahasia ke AI publik tanpa izin dan kanal yang sesuai.</p></div></div>
+    <div class="ethic-card"><div class="ethic-icon">2</div><div><h5 style="font-size:15px; margin-bottom:4px;">Selalu verifikasi hasil</h5><p style="font-size:13.5px; color:var(--ink-soft);">Cek ulang fakta, angka, dan istilah sebelum dijadikan dokumen resmi.</p></div></div>
+    <div class="ethic-card"><div class="ethic-icon">3</div><div><h5 style="font-size:15px; margin-bottom:4px;">AI itu alat bantu, bukan pengganti tanggung jawab</h5><p style="font-size:13.5px; color:var(--ink-soft);">Keputusan dan konsekuensinya tetap ada di tanganmu, bukan di tangan AI.</p></div></div>
+    <div class="ethic-card"><div class="ethic-icon">4</div><div><h5 style="font-size:15px; margin-bottom:4px;">Terus berlatih</h5><p style="font-size:13.5px; color:var(--ink-soft);">Kemampuan AI berkembang cepat — sisihkan waktu rutin untuk mencoba hal baru.</p></div></div>
+    <div class="ethic-card"><div class="ethic-icon">5</div><div><h5 style="font-size:15px; margin-bottom:4px;">Data mikro responden bukan sekadar "data pribadi"</h5><p style="font-size:13.5px; color:var(--ink-soft);">Data hasil pendataan/sensus (identitas responden, alamat usaha, jawaban kuesioner) berstatus rahasia dan dilindungi undang-undang statistik — levelnya beda dari data pegawai biasa. Data semacam ini hanya boleh diproses lewat kanal internal yang sudah diaudit keamanannya, <strong>tidak</strong> diunggah ke AI publik. Prinsip amannya: AI publik untuk narasi, ringkasan, dan kode — bukan untuk data mikro responden.</p></div></div>
+  </div>
+</section>
+
+<!-- ============ QUIZ RECAP ============ -->
+<section class="module" id="quiz">
+  <div class="wrap">
+    <div class="module-head">
+      <span class="module-num">RECAP</span>
+      <div>
+        <h2>Uji cepat pemahamanmu <span class="badge-done" id="badgeDone">✓ Semua benar!</span></h2>
+        <p class="module-desc">Tujuh pertanyaan singkat merangkum semua modul di atas.</p>
+      </div>
+    </div>
+    <div id="quizContainer"></div>
+    <div class="quiz-score"><span>Skor kamu</span><span class="n" id="quizScore">0 / 7</span></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Bahan Ajar Interaktif — Pemanfaatan AI dalam Dunia Perkantoran</div>
+</footer>
+
+  </main>
+</div>
+
+<script>
+/* ---------------- CONFIG ---------------- */
+const modules = [
+  {id:'module-1', label:'Kenali AI'},
+  {id:'module-2', label:'Prompting'},
+  {id:'module-3', label:'Diagram Alur'},
+  {id:'module-4', label:'Database'},
+  {id:'module-5', label:'Bangun App'},
+  {id:'module-6', label:'Hosting'},
+  {id:'module-7', label:'Etika'},
+];
+
+/* ---------------- FLOWCHART RAIL NAV ---------------- */
+const railNav = document.getElementById('railNav');
+modules.forEach((m,i)=>{
+  const a = document.createElement('a');
+  a.className = 'rail-node';
+  a.dataset.target = m.id;
+  a.href = '#'+m.id;
+  a.innerHTML = `<span class="pill"><span class="num">${i+1}</span>${m.label}</span>`;
+  railNav.appendChild(a);
+  if(i < modules.length-1){
+    const arrow = document.createElement('span');
+    arrow.className = 'rail-arrow';
+    arrow.textContent = '→';
+    railNav.appendChild(arrow);
+  }
+});
+const railNodes = railNav.querySelectorAll('.rail-node');
+
+/* ---------------- SIDEBAR SCROLL SPY ---------------- */
+const treeItems = document.querySelectorAll('.tree-item');
+treeItems.forEach(item=>{
+  item.addEventListener('click', ()=>{
+    const el = document.getElementById(item.dataset.target);
+    if(el) el.scrollIntoView({behavior:'smooth'});
+    document.getElementById('sidebar').classList.remove('open');
+  });
+});
+const spyTargets = ['pendahuluan', ...modules.map(m=>m.id), 'quiz'];
+const sections = spyTargets.map(id=>document.getElementById(id)).filter(Boolean);
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      const idx = modules.findIndex(m=>m.id===entry.target.id);
+      railNodes.forEach((r,i)=>r.classList.toggle('active', i===idx));
+      treeItems.forEach(t=>t.classList.remove('active'));
+      const match = document.querySelector(`.tree-item[data-target="${entry.target.id}"]`);
+      if(match) match.classList.add('active');
+    }
+  });
+}, {rootMargin:'-40% 0px -50% 0px'});
+sections.forEach(s=>observer.observe(s));
+
+/* ---------------- HERO CONSOLE DEMO ---------------- */
+const demos = [
+  {prompt:"Ringkas notulen rapat koordinasi SE2026 jadi 5 poin tindak lanjut, bahasa formal.", output:"1. Target cakupan wilayah dinaikkan 8%\n2. Petugas lapangan tambahan disiapkan minggu depan\n3. Sosialisasi ke kecamatan dijadwalkan Senin\n4. Laporan progres harian wajib dikirim jam 16.00\n5. Evaluasi menyeluruh dilakukan akhir bulan"},
+  {prompt:"Buatkan draf surat dinas undangan rapat koordinasi untuk 10 kecamatan, Kamis 09.00.", output:"Nomor: 005/UND/BPS-3175/2026\nPerihal: Undangan Rapat Koordinasi\n\nSehubungan dengan pelaksanaan kegiatan, kami mengundang..."},
+  {prompt:"Rapikan rumus rekap cuti pegawai di tabel ini dan tandai yang sisa cutinya di bawah 5.", output:"Ditemukan 2 pegawai dengan sisa cuti < 5.\nRumus SUMIFS ditambahkan di kolom F untuk rekap otomatis."}
+];
+let demoIdx = 0;
+function typeConsole(){
+  const promptEl = document.getElementById('consolePrompt');
+  const outputEl = document.getElementById('consoleOutput');
+  const {prompt, output} = demos[demoIdx];
+  let i = 0;
+  outputEl.classList.remove('show');
+  outputEl.textContent = '';
+  promptEl.innerHTML = '';
+  const typer = setInterval(()=>{
+    promptEl.innerHTML = prompt.slice(0,i) + '<span class="cursor"></span>';
+    i++;
+    if(i > prompt.length){
+      clearInterval(typer);
+      setTimeout(()=>{
+        outputEl.textContent = output;
+        outputEl.classList.add('show');
+        setTimeout(()=>{ demoIdx = (demoIdx+1) % demos.length; typeConsole(); }, 3200);
+      }, 500);
+    }
+  }, 28);
+}
+typeConsole();
+
+/* ---------------- PROMPT BUILDER (Module 2) ---------------- */
+function updateBuilder(){
+  const ctx = document.getElementById('bCtx').value;
+  const task = document.getElementById('bTask').value;
+  const fmt = document.getElementById('bFmt').value;
+  document.getElementById('builderOut').innerHTML =
+    `${ctx}. <span class="hl">Tolong ${task}</span>, ${fmt}.`;
+}
+updateBuilder();
+
+/* ---------------- FLOWCHART INFO (Module 3) ---------------- */
+const flowInfo = {
+  start:{title:"Mulai / Selesai (Oval)", desc:"Menandai titik awal atau akhir proses. Di sini: pegawai memulai pengajuan cuti."},
+  input:{title:"Input / Output (Jajaran genjang)", desc:"Data yang dimasukkan atau dikeluarkan sistem — di sini, pegawai mengisi form cuti."},
+  decision:{title:"Keputusan (Diamond)", desc:"Titik cabang dengan jawaban ya/tidak. Atasan menentukan apakah cuti disetujui."},
+  reject:{title:"Proses — Ditolak", desc:"Jika tidak disetujui, form dikembalikan ke pegawai beserta alasannya."},
+  approve:{title:"Proses — Disetujui", desc:"Jika disetujui, sistem menerbitkan surat cuti secara otomatis."},
+  end1:{title:"Selesai (jalur revisi)", desc:"Alur berhenti di sini sampai pegawai mengajukan ulang."},
+  end2:{title:"Selesai (jalur disetujui)", desc:"Cuti pegawai resmi aktif dan tercatat di sistem."}
+};
+document.querySelectorAll('.fnode').forEach(node=>{
+  node.addEventListener('click', ()=>{
+    document.querySelectorAll('.fnode').forEach(n=>n.classList.remove('active'));
+    node.classList.add('active');
+    const info = flowInfo[node.dataset.info];
+    document.getElementById('flowTitle').textContent = info.title;
+    document.getElementById('flowDesc').textContent = info.desc;
+  });
+});
+
+/* ---------------- DATA TABLE HIGHLIGHT (Module 4) ---------------- */
+document.querySelectorAll('#dataTable th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const col = th.dataset.col;
+    const active = th.classList.contains('active');
+    document.querySelectorAll('#dataTable th').forEach(h=>h.classList.remove('active'));
+    document.querySelectorAll('#dataTable td').forEach(td=>td.classList.remove('active-col'));
+    if(!active){
+      th.classList.add('active');
+      document.querySelectorAll(`#dataTable td[data-col="${col}"]`).forEach(td=>td.classList.add('active-col'));
+    }
+  });
+});
+
+/* ---------------- FLOWCHART 2 INFO (Module 3, contoh verifikasi kuesioner) ---------------- */
+const flowInfo2 = {
+  start:{title:"Mulai — Terima kuesioner", desc:"Titik awal proses: petugas menerima kuesioner hasil pendataan lapangan."},
+  check1:{title:"Keputusan — Isian lengkap?", desc:"Cek semua halaman terisi. Jika tidak, kuesioner ditandai untuk dicek ulang; jika lengkap, lanjut ke entry data."},
+  entry:{title:"Proses — Entry data ke sistem", desc:"Isian kuesioner dipindahkan dari kertas ke sistem."},
+  check2:{title:"Keputusan — Lolos validasi otomatis?", desc:"Sistem mengecek kewajaran nilai (mis. umur tidak mungkin negatif). Jika ada anomali, kembali ditandai untuk dicek; jika valid, data disimpan."},
+  flag:{title:"Proses — Tandai untuk dicek ulang", desc:"Kuesioner bermasalah dikembalikan ke tahap pengecekan, bukan langsung dibuang — ini mencegah data hilang begitu saja."},
+  save:{title:"Proses — Simpan ke database", desc:"Data yang sudah valid resmi tersimpan dan siap dipakai untuk pengolahan berikutnya."},
+  end2:{title:"Selesai", desc:"Satu kuesioner selesai diproses dan datanya sudah aman di database."}
+};
+document.querySelectorAll('.fnode2').forEach(node=>{
+  if(!node.dataset.info2) return;
+  node.addEventListener('click', ()=>{
+    document.querySelectorAll('.fnode2').forEach(n=>n.classList.remove('active'));
+    node.classList.add('active');
+    const info = flowInfo2[node.dataset.info2];
+    document.getElementById('flowTitle2').textContent = info.title;
+    document.getElementById('flowDesc2').textContent = info.desc;
+  });
+});
+
+/* ---------------- ORDER EXERCISE (Module 3) ---------------- */
+const orderSteps = [
+  {id:'a', text:'Pegawai mengisi form izin keluar kantor', correct:0},
+  {id:'b', text:'Sistem mengirim notifikasi ke atasan langsung', correct:1},
+  {id:'c', text:'Atasan memeriksa alasan dan jadwal yang diajukan', correct:2},
+  {id:'d', text:'Atasan menyetujui atau menolak permintaan', correct:3},
+  {id:'e', text:'Sistem mencatat status izin di rekap kehadiran', correct:4},
+  {id:'f', text:'Pegawai menerima notifikasi hasil persetujuan', correct:5},
+];
+let orderShuffled = [...orderSteps].sort(()=>Math.random()-0.5);
+let selectedOrder = [];
+function renderOrderChips(){
+  const el = document.getElementById('orderChips');
+  el.innerHTML = '';
+  orderShuffled.forEach(step=>{
+    const chip = document.createElement('div');
+    chip.className = 'order-chip';
+    chip.dataset.id = step.id;
+    const pos = selectedOrder.indexOf(step.id);
+    if(pos > -1) chip.classList.add('selected');
+    chip.innerHTML = `<span class="badge">${pos > -1 ? pos+1 : ''}</span><span>${step.text}</span>`;
+    chip.onclick = ()=>{
+      const i = selectedOrder.indexOf(step.id);
+      if(i > -1) selectedOrder.splice(i,1);
+      else selectedOrder.push(step.id);
+      document.getElementById('orderResult').textContent = '';
+      renderOrderChips();
+    };
+    el.appendChild(chip);
+  });
+}
+function checkOrder(){
+  const resultEl = document.getElementById('orderResult');
+  if(selectedOrder.length < orderSteps.length){
+    resultEl.textContent = `Pilih semua ${orderSteps.length} langkah dulu (baru ${selectedOrder.length}).`;
+    resultEl.style.color = 'var(--coral)';
+    return;
+  }
+  let correctCount = 0;
+  document.querySelectorAll('.order-chip').forEach(chip=>{
+    const step = orderSteps.find(s=>s.id===chip.dataset.id);
+    const pos = selectedOrder.indexOf(step.id);
+    chip.classList.remove('correct','incorrect');
+    if(pos === step.correct){ chip.classList.add('correct'); correctCount++; }
+    else chip.classList.add('incorrect');
+  });
+  resultEl.textContent = correctCount === orderSteps.length
+    ? '✓ Semua urutan benar!'
+    : `${correctCount} dari ${orderSteps.length} sudah di posisi yang benar — kotak merah berarti masih perlu ditukar.`;
+  resultEl.style.color = correctCount === orderSteps.length ? 'var(--teal-dark)' : 'var(--ink-soft)';
+}
+function resetOrder(){
+  selectedOrder = [];
+  orderShuffled = [...orderSteps].sort(()=>Math.random()-0.5);
+  document.getElementById('orderResult').textContent = '';
+  renderOrderChips();
+}
+renderOrderChips();
+
+/* ---------------- PK EXERCISE (Module 4) ---------------- */
+document.querySelectorAll('#pkTable th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const col = th.dataset.col;
+    const resultEl = document.getElementById('pkResult');
+    document.querySelectorAll('#pkTable th').forEach(h=>h.classList.remove('active'));
+    th.classList.add('active');
+    if(col === 'nip'){
+      resultEl.textContent = '✓ Tepat. "nip" pasti unik untuk tiap pegawai — cocok jadi Primary Key. Perhatikan dua "Andi Wijaya" di atas: namanya sama, tapi NIP-nya berbeda.';
+      resultEl.style.color = 'var(--teal-dark)';
+    } else {
+      resultEl.textContent = `Coba lagi — kolom "${col}" bisa saja kembar antar pegawai (lihat dua "Andi Wijaya" di atas), jadi bukan pilihan yang aman untuk kunci utama.`;
+      resultEl.style.color = 'var(--coral)';
+    }
+  });
+});
+
+/* ---------------- CHECKLIST (Module 6) ---------------- */
+const checklistItems = [
+  "Siapkan berkas atau kode aplikasi yang sudah jadi",
+  "Daftar akun di platform hosting pilihan",
+  "Hubungkan atau unggah proyek ke platform tersebut",
+  "Jalankan proses deploy dan dapatkan tautan aktif",
+  "Uji akses tautan dari perangkat lain",
+  "Bagikan tautan ke rekan kerja untuk uji coba"
+];
+const checklistEl = document.getElementById('checklist');
+checklistItems.forEach(text=>{
+  const item = document.createElement('div');
+  item.className = 'check-item';
+  item.innerHTML = `<span class="box">✓</span><span class="txt">${text}</span>`;
+  item.onclick = ()=>item.classList.toggle('done');
+  checklistEl.appendChild(item);
+});
+
+/* ---------------- QUIZ ---------------- */
+const quiz = [
+  {q:"Manakah yang termasuk keterbatasan AI?", opts:["Bisa menulis email","Bisa 'berhalusinasi' dan salah dengan percaya diri","Bisa meringkas dokumen","Bisa membuat kode"], correct:1},
+  {q:"Urutan anatomi prompt yang tepat adalah...", opts:["Format → Tugas → Konteks → Batasan","Konteks → Tugas → Format → Batasan","Batasan → Konteks → Format → Tugas","Tugas → Batasan → Konteks → Format"], correct:1},
+  {q:"Bentuk diamond dalam diagram alur berarti...", opts:["Mulai/selesai","Proses","Keputusan (ya/tidak)","Input data"], correct:2},
+  {q:"Kesalahan paling umum saat menggambar diamond keputusan adalah...", opts:["Warnanya terlalu mencolok","Hanya punya satu jalur keluar, bukan dua","Ukurannya terlalu besar","Diletakkan di awal diagram"], correct:1},
+  {q:"Dalam database, satu baris tabel paling tepat diibaratkan sebagai...", opts:["Nama lemari","Satu map/folder data","Label kolom","Alamat server"], correct:1},
+  {q:"Kenapa setiap tabel butuh Primary Key?", opts:["Supaya tabel terlihat rapi","Karena wajib berupa angka","Supaya tiap baris punya penanda yang dijamin tidak kembar","Supaya bisa diberi warna"], correct:2},
+  {q:"Hosting statis paling cocok digunakan untuk...", opts:["Aplikasi dengan ribuan transaksi database harian","Halaman informasi atau formulir sederhana","Sistem penggajian nasional","Server email kantor"], correct:1},
+  {q:"Kapan hasil hitungan AI paling bisa dipercaya?", opts:["Saat AI menjawab dari 'ingatannya' tanpa data terlampir","Saat AI mengolah data/file yang kamu lampirkan langsung","Saat pertanyaannya dijawab sangat cepat","Saat AI menjawab dengan nada percaya diri"], correct:1},
+  {q:"Fungsi 'view' dalam database paling tepat diibaratkan sebagai...", opts:["Lemari arsip baru yang kosong","Rekap ringkasan yang sudah disusun dari beberapa tabel, siap dibaca","Kunci utama sebuah tabel","Proses menghapus data lama"], correct:1},
+  {q:"Data hasil pendataan/sensus (identitas & jawaban responden) sebaiknya...", opts:["Diunggah ke AI publik asal hasil akhirnya dirapikan","Diproses lewat kanal internal yang aman, tidak ke AI publik","Disamakan saja perlakuannya dengan data pegawai biasa","Bebas dibagikan selama untuk laporan resmi"], correct:1},
+];
+const quizContainer = document.getElementById('quizContainer');
+let score = 0;
+let answered = 0;
+quiz.forEach((item, qi)=>{
+  const card = document.createElement('div');
+  card.className = 'quiz-card';
+  const optsHtml = item.opts.map((opt,oi)=>`<button class="quiz-opt" data-q="${qi}" data-o="${oi}">${opt}</button>`).join('');
+  card.innerHTML = `<div class="quiz-q">${qi+1}. ${item.q}</div><div class="quiz-opts">${optsHtml}</div>`;
+  quizContainer.appendChild(card);
+});
+quizContainer.addEventListener('click', (e)=>{
+  if(!e.target.classList.contains('quiz-opt')) return;
+  const qi = e.target.dataset.q;
+  const oi = parseInt(e.target.dataset.o);
+  const group = quizContainer.querySelectorAll(`.quiz-opt[data-q="${qi}"]`);
+  if(group[0].disabled) return;
+  group.forEach(btn=>{
+    btn.disabled = true;
+    const bo = parseInt(btn.dataset.o);
+    if(bo === quiz[qi].correct) btn.classList.add('correct');
+    else if(bo === oi) btn.classList.add('incorrect');
+  });
+  if(oi === quiz[qi].correct) score++;
+  answered++;
+  document.getElementById('quizScore').textContent = `${score} / ${quiz.length}`;
+  if(answered === quiz.length && score === quiz.length){
+    document.getElementById('badgeDone').classList.add('show');
+  }
+});
+</script>
+</body>
+</html>
